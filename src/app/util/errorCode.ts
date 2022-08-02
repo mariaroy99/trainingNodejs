@@ -17,6 +17,10 @@ export const ErrorCodes: { [key: string]: CustomError } = {
     VALIDATION_ERROR: {
         CODE: "VALIDATION_ERROR",
         MESSAGE: "Validation failed error",
+    },
+    INCORRECTUSERNAMEORPASSWORD:{
+        CODE: "INCORRECTUSERNAMEORPASSWORD",
+        MESSAGE:"Usernamr or Password incorrect"
     }
 };
 

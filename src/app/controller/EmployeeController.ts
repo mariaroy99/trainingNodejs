@@ -6,6 +6,8 @@ import { EmployeeService } from "../service/EmployeeService";
 import {CreateEmployeeDto} from "../dto/createEmployeeDto";
 import validationMiddleware from "../middleware/validationMiddleware";
 import authorize from "../middleware/authorize";
+import { uuidDto } from "../dto/uuidDto";
+import { loginDto } from "../dto/loginDto";
 
 // class EmployeeController extends AbstractController {
 //   constructor() {
@@ -33,15 +35,15 @@ class EmployeeController extends AbstractController {
       this.initializeRoutes();
     }
     protected initializeRoutes() {
-      this.router.get(`${this.path}`, authorize(), this.employeeResponse);
+      this.router.get(`${this.path}`, authorize(["admin","superAdmin","HR"]), this.employeeResponse);
       this.router.post(`${this.path}`, validationMiddleware(CreateEmployeeDto, APP_CONSTANTS.body),
         // this.asyncRouteHandler(this.createEmployee),
          this.createEmployee
       );
       this.router.put(`${this.path}/:id`, this.updateEmployeeDetails);
-      this.router.delete(`${this.path}`, this.softDeleteEmployeeById);
-      this.router.get(`${this.path}/:id`, this.getEmployeeId);
-      this.router.post( `${this.path}/login`, this.login
+      this.router.delete(`${this.path}`, validationMiddleware(uuidDto,APP_CONSTANTS.params),this.softDeleteEmployeeById);
+      this.router.get(`${this.path}/:id`,validationMiddleware(uuidDto,APP_CONSTANTS.params), this.getEmployeeId);
+      this.router.post( `${this.path}/login`, validationMiddleware(loginDto,APP_CONSTANTS.body),this.login
       );
 
     }

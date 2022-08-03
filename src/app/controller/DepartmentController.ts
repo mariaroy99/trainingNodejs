@@ -5,6 +5,7 @@ import APP_CONSTANTS from "../constants";
 import { DepartmentService } from "../service/DepartmentService";
 import validationMiddleware from "../middleware/validationMiddleware";
 import {CreateDepartmentDto} from "../dto/createDepartmentDto";
+import { uuidDto } from "../dto/uuidDto";
 
 class DepartmentController extends AbstractController {
     constructor(private departmentService: DepartmentService) {
@@ -13,12 +14,12 @@ class DepartmentController extends AbstractController {
     }
     protected initializeRoutes() {
       this.router.get(`${this.path}`, this.departmentResponse);
-      this.router.post( `${this.path}`,
-         validationMiddleware(CreateDepartmentDto, APP_CONSTANTS.body),
+      this.router.post( `${this.path}`, validationMiddleware(CreateDepartmentDto, APP_CONSTANTS.body),
         // this.asyncRouteHandler(this.createEmployee)
         this.createDepartment
       );
-      this.router.delete(`${this.path}`, this.softDeleteDepartmentById);
+      this.router.get(`${this.path}/:id`, validationMiddleware(uuidDto,APP_CONSTANTS.params), this.getDepartmentId);
+      this.router.delete(`${this.path}`, validationMiddleware(uuidDto,APP_CONSTANTS.params),this.softDeleteDepartmentById);
       this.router.put(`${this.path}/:id`, this.updateDepartmentDetails);
 
     }
@@ -68,6 +69,22 @@ class DepartmentController extends AbstractController {
     ) => {
       try {
         const data = await this.departmentService.updateDepartmentDetails(request.params.id, request.body);
+        response.send(
+          this.fmt.formatResponse(data, Date.now() - request.startTime, "OK")
+        );
+      } catch (err) {
+        next(err);
+      }
+    }
+
+    private getDepartmentId = async (
+      request: RequestWithUser,
+      response: Response,
+      next: NextFunction
+    ) => {
+      try {
+        const {id} = request.params;
+        const data = await this.departmentService.getDepartmentId(id);
         response.send(
           this.fmt.formatResponse(data, Date.now() - request.startTime, "OK")
         );

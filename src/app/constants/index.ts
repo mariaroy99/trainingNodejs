@@ -6,6 +6,9 @@ const APP_CONSTANTS = {
     authorizationHeader: "Authorization",
     bearer: "Bearer",
     basePath:`http://localhost:${process.env.PORT}`,
+    admin:"admin",
+    superAdmin:"superAdmin",
+    HR:"HR",
 
     // Add the short name of the service below
     service: "employee-app"

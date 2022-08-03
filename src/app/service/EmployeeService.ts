@@ -55,6 +55,7 @@ export class EmployeeService{
     }
     public async updateEmployeeDetails(employeeId: string, employeeDetails: UpdateEmployeeDto) {
       try {
+        //const checkId=await this.getEmployeeById(employeeId);
         const newAddress=plainToClass(Address, {
           id:employeeDetails.address.id,
           firstLine:employeeDetails.address.firstLine,

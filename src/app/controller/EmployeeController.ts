@@ -7,7 +7,6 @@ import {CreateEmployeeDto} from "../dto/createEmployeeDto";
 import validationMiddleware from "../middleware/validationMiddleware";
 import authorize from "../middleware/authorize";
 import { uuidDto } from "../dto/uuidDto";
-import { loginDto } from "../dto/loginDto";
 import { UpdateEmployeeDto } from "../dto/updateEmployeeDto";
 
 
@@ -19,12 +18,11 @@ class EmployeeController extends AbstractController {
 
     protected initializeRoutes() {
       this.router.get(`${this.path}`, authorize([APP_CONSTANTS.admin,APP_CONSTANTS.superAdmin,APP_CONSTANTS.HR]), this.employeeResponse);
-      this.router.post(`${this.path}`, validationMiddleware(CreateEmployeeDto, APP_CONSTANTS.body),this.createEmployee);
-      this.router.put(`${this.path}/:id`, validationMiddleware(uuidDto,APP_CONSTANTS.params), validationMiddleware(UpdateEmployeeDto,APP_CONSTANTS.body,true), this.updateEmployeeDetails);
-      this.router.delete(`${this.path}/:id`, validationMiddleware(uuidDto,APP_CONSTANTS.params),this.softDeleteEmployeeById);
-      this.router.get(`${this.path}/:id`,validationMiddleware(uuidDto,APP_CONSTANTS.params), this.getEmployeeById);
-      this.router.post( `${this.path}/login`, validationMiddleware(loginDto,APP_CONSTANTS.body),this.login
-      );
+      this.router.post(`${this.path}`, authorize([APP_CONSTANTS.admin,APP_CONSTANTS.superAdmin]), validationMiddleware(CreateEmployeeDto, APP_CONSTANTS.body),this.createEmployee);
+      this.router.put(`${this.path}/:id`, authorize([APP_CONSTANTS.admin,APP_CONSTANTS.superAdmin]),validationMiddleware(uuidDto,APP_CONSTANTS.params), validationMiddleware(UpdateEmployeeDto,APP_CONSTANTS.body,true), this.updateEmployeeDetails);
+      this.router.delete(`${this.path}/:id`, authorize([APP_CONSTANTS.admin,APP_CONSTANTS.superAdmin]),validationMiddleware(uuidDto,APP_CONSTANTS.params),this.softDeleteEmployeeById);
+      this.router.get(`${this.path}/:id`,authorize([APP_CONSTANTS.admin,APP_CONSTANTS.superAdmin,APP_CONSTANTS.HR]),validationMiddleware(uuidDto,APP_CONSTANTS.params), this.getEmployeeById);
+      this.router.post( `${this.path}/login`, this.login);
     }
 
     private createEmployee = async (
@@ -107,7 +105,6 @@ class EmployeeController extends AbstractController {
         const loginData = request.body;
         const loginDetail = await this.employeeService.employeeLogin(
           loginData.name,
-          //toLowercase()
           loginData.password
         );
         response.send(
